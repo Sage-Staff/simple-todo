@@ -1,6 +1,9 @@
+const dotenv = require('dotenv')
+dotenv.config()
 let express = require('express')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 let sanitizeHTML = require('sanitize-html')
+
 
 let app = express()
 let db
@@ -12,7 +15,7 @@ if(port == null || port == ""){
 
 app.use(express.static('public'))
 
-const uri = 'mongodb+srv://todoAppUser:todoAppUser@cluster0.khwgf8f.mongodb.net/?retryWrites=true&w=majority'
+const uri = process.env.CONNECTSTRING
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri,  {
@@ -49,7 +52,7 @@ app.use(express.urlencoded({extended: false}))
 function passwordProtected(req, res, next){
   res.set('WWW-Authenticate', 'Basic realm="Simple Todo App"')
   console.log(req.headers.authorization)
-  if(req.headers.authorization == "Basic QWRtaW46c3VwZXJhZG1pbg=="){
+  if(req.headers.authorization == process.env.HEADERAUTH){
     next()
   }else{
     res.status(401).send("Authentication required")
